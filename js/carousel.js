@@ -15,20 +15,28 @@ items.forEach((item, index) => {
 });
 
 let rotation = 0;
+let isPlayingVideo = false;
 
 function animate() {
-  rotation += 0.25;
-  carousel.style.transform = `rotateY(${rotation}deg)`;
+  if (!isPlayingVideo) {
+    rotation += 0.25;
+    carousel.style.transform = `rotateY(${rotation}deg)`;
+  }
 
   items.forEach(item => {
     if (item.tagName !== 'VIDEO') return;
 
     const angle = (parseFloat(item.dataset.angle) + rotation) % 360;
-    const isFront = angle < 25 || angle > 335;
+    const isFront = angle < 20 || angle > 340;
 
-    if (isFront) {
+    if (isFront && !isPlayingVideo) {
+      isPlayingVideo = true;
+      item.currentTime = 0;
       item.play().catch(() => {});
-    } else {
+      item.onended = () => {
+        isPlayingVideo = false;
+      };
+    } else if (!isFront) {
       item.pause();
       item.currentTime = 0;
     }
