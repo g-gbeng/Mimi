@@ -160,3 +160,7 @@ p {
     0 0 30px rgba(200, 150, 255, 0.35),
     0 20px 40px rgba(0,0,0,0.4);
 }
+.carousel video {
+  backface-visibility: hidden;
+  will-change: transform;
+}

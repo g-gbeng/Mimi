@@ -1,18 +1,40 @@
 const carousel = document.querySelector('.carousel');
-const items = carousel.children;
-const itemCount = items.length;
-const radius = 420; // distance from center
+const items = Array.from(carousel.children);
+const radius = 420;
+const total = items.length;
 
-Array.from(items).forEach((item, index) => {
-  const angle = (360 / itemCount) * index;
+items.forEach((item, index) => {
+  const angle = (360 / total) * index;
+  item.dataset.angle = angle;
+
   item.style.transform = `
     translate(-50%, -50%)
     rotateY(${angle}deg)
     translateZ(${radius}px)
   `;
-
-  // Auto-play videos
-  if (item.tagName === 'VIDEO') {
-    item.play();
-  }
 });
+
+let rotation = 0;
+
+function animate() {
+  rotation += 0.25;
+  carousel.style.transform = `rotateY(${rotation}deg)`;
+
+  items.forEach(item => {
+    if (item.tagName !== 'VIDEO') return;
+
+    const angle = (parseFloat(item.dataset.angle) + rotation) % 360;
+    const isFront = angle < 25 || angle > 335;
+
+    if (isFront) {
+      item.play().catch(() => {});
+    } else {
+      item.pause();
+      item.currentTime = 0;
+    }
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
